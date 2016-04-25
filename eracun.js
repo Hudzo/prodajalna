@@ -146,10 +146,14 @@ var strankaIzRacuna = function(racunId, callback) {
     })
 }
 
+
+
 // Izpis računa v HTML predstavitvi na podlagi podatkov iz baze
 streznik.post('/izpisiRacunBaza', function(zahteva, odgovor) {
-  odgovor.end();
+  odgovor.redirect('/izpisiRacun/html');
 })
+
+
 
 // Izpis računa v HTML predstavitvi ali izvorni XML obliki
 streznik.get('/izpisiRacun/:oblika', function(zahteva, odgovor) {
