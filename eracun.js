@@ -151,6 +151,8 @@ streznik.post('/izpisiRacunBaza', function(zahteva, odgovor) {
   odgovor.end();
 })
 
+
+
 // Izpis računa v HTML predstavitvi ali izvorni XML obliki
 streznik.get('/izpisiRacun/:oblika', function(zahteva, odgovor) {
   pesmiIzKosarice(zahteva, function(pesmi) {
@@ -168,6 +170,8 @@ streznik.get('/izpisiRacun/:oblika', function(zahteva, odgovor) {
     }
   })
 })
+
+
 
 // Privzeto izpiši račun v HTML obliki
 streznik.get('/izpisiRacun', function(zahteva, odgovor) {
