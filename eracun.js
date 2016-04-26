@@ -165,6 +165,20 @@ var strankaIzRacuna = function(racunId, callback) {
 }
 
 
+// Vrni podrobnosti o stranki iz njenega ID
+var strankaIzID = function(strankaId, callback) {
+    pb.all("SELECT Customer.* FROM Customer \
+            WHERE Customer.CustomerId = " + strankaId,
+    function(napaka, vrstice) {
+      if (napaka) {
+        callback(false);
+      } 
+      else {
+        callback(vrstice);
+      }
+    })
+}
+
 
 // Izpis računa v HTML predstavitvi na podlagi podatkov iz baze
 streznik.post('/izpisiRacunBaza', function(zahteva, odgovor) {
@@ -202,26 +216,33 @@ streznik.post('/izpisiRacunBaza', function(zahteva, odgovor) {
 })// /izpisRacunaBaza
 
 
-
+//spremenljivka za strankin ID
+var kdo;
 
 
 // Izpis računa v HTML predstavitvi ali izvorni XML obliki
 streznik.get('/izpisiRacun/:oblika', function(zahteva, odgovor) {
   
-  pesmiIzKosarice(zahteva, function(pesmi) {
-    if (!pesmi) {
-      odgovor.sendStatus(500);
-    } else if (pesmi.length == 0) {
-      odgovor.send("<p>V košarici nimate nobene pesmi, \
-        zato računa ni mogoče pripraviti!</p>");
-    } else {
-      odgovor.setHeader('content-type', 'text/xml');
-      odgovor.render('eslog', {
-        vizualiziraj: zahteva.params.oblika == 'html' ? true : false,
-        postavkeRacuna: pesmi
-      })  
-    }
-  })
+  strankaIzID(kdo, function(stranka){
+  
+    pesmiIzKosarice(zahteva, function(pesmi) {
+      if (!pesmi) {
+        odgovor.sendStatus(500);
+      } else if (pesmi.length == 0) {
+        odgovor.send("<p>V košarici nimate nobene pesmi, \
+          zato računa ni mogoče pripraviti!</p>");
+      } else {
+        odgovor.setHeader('content-type', 'text/xml');
+        odgovor.render('eslog', {
+          vizualiziraj: zahteva.params.oblika == 'html' ? true : false,
+          postavkeRacuna: pesmi,
+          podatkiPodjetja: stranka
+        })  
+      }
+    })
+  });
+  
+  
 })
 
 
@@ -303,6 +324,7 @@ streznik.post('/stranka', function(zahteva, odgovor) {
   var form = new formidable.IncomingForm();
   flag=false;
   form.parse(zahteva, function (napaka1, polja, datoteke) {
+    kdo = polja.seznamStrank;
     odgovor.redirect('/')
   });
 })
